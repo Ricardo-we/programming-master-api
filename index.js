@@ -1,6 +1,7 @@
 const APP_PORT = process.env.PORT || 5005;
 const { app, APPS } = require("./src/config/app");
 const { syncTables, authenticate } = require("./src/config/db.config");
+const { registerModels } = require("./src/apps/admin/admin-utils");
 
 app.listen(APP_PORT, () => {
 	try {
@@ -17,6 +18,7 @@ app.listen(APP_PORT, () => {
 		}
 		authenticate();
 		// SET VALUES TO TRUE FOR MAKE DB CHANGES
+		registerModels(models.map((model) => model.getTableName()));
 		syncTables(models);
 		console.log("Listening on port " + APP_PORT);
 	} catch (error) {

@@ -35,7 +35,15 @@ const verifyUserToken = async (req, checkProfile = false) => {
 	return user;
 };
 
+const verifyUserIsAdmin = async (req) => {
+	const userFullProfile = await verifyUserToken(req, true);
+	if (userFullProfile.profile.plan !== "admin")
+		throw new Error("Only administrators can change this");
+	return userFullProfile;
+};
+
 module.exports = {
 	verifyUserToken,
 	createToken,
+	verifyUserIsAdmin,
 };

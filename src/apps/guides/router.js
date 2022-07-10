@@ -14,7 +14,9 @@ router.registerRoute(programmingLanguagesController, "/programming-languages", {
 	params: ":id",
 });
 // TUTORIALS
-router.registerRoute(tutorialsController, "/tutorials", { params: ":id" });
+router.registerRoute(tutorialsController, "/tutorials", {
+	params: ":id",
+});
 router.router.get(
 	"/programming-languages/:id/guides",
 	programmingLanguagesController.getProgrammingLanguageGuides,

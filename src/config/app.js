@@ -5,7 +5,7 @@ const cors = require("cors");
 app.use(express.json());
 app.use(cors());
 
-const APPS = ["users", "guides"];
+const APPS = ["users", "guides", "admin"];
 
 for (const appData of APPS) {
 	if (typeof appData === "string") {

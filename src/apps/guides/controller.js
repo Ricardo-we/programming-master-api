@@ -12,15 +12,9 @@ class GuidesController extends BaseController {
 	async post(req, res) {
 		try {
 			const fullUser = await verifyUserToken(req, true);
-			const data = req.body;
 			if (fullUser.profile.plan !== "admin")
 				throw new Error("Only admin user can create guides");
-			const guide = await GuidesModel.create({
-				programming_language_id: data.programming_language_id,
-				pro_only: data.pro_only,
-				title: data.title,
-				introduction: data.introduction,
-			});
+			const guide = await GuidesModel.create(req.body);
 			return res.json(guide);
 		} catch (error) {
 			errorResponse(error, res);
@@ -72,16 +66,11 @@ class GuidesController extends BaseController {
 			if (fullUser.profile.plan !== "admin")
 				throw new Error("Only admins can change guides");
 			const { id } = req.params;
-			const { pro_only, title, introduction, programming_language_id } =
-				req.body;
-			const guide = await GuidesModel.update(
-				{ pro_only, title, introduction, programming_language_id },
-				{
-					where: {
-						id,
-					},
+			const guide = await GuidesModel.update(req.body, {
+				where: {
+					id,
 				},
-			);
+			});
 			return res.json(guide);
 		} catch (error) {
 			errorResponse(error, res);

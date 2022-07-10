@@ -10,15 +10,25 @@ const ProgrammingLanguages = sequelize.define("programming_languages", {
 		allowNull: false,
 	},
 	description: DataTypes.TEXT,
-	is_framework: DataTypes.BOOLEAN,
+	is_framework: {
+		type: DataTypes.BOOLEAN,
+		defaultValue: false,
+	},
 	extension_name: DataTypes.STRING(10),
 });
 
 const GuidesModel = sequelize.define("guides", {
 	id: IDField,
 	pro_only: DataTypes.BOOLEAN,
-	title: DataTypes.STRING(300),
+	title: {
+		type: DataTypes.STRING(300),
+		allowNull: false,
+	},
 	introduction: DataTypes.TEXT,
+	guide_contents_md: {
+		type: DataTypes.TEXT,
+		allowNull: false,
+	},
 });
 
 const Tutorials = sequelize.define("tutorials", {
