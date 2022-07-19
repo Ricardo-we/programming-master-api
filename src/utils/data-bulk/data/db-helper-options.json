@@ -1,0 +1,12 @@
+[
+    {
+        "db_helper_id": 1,
+        "code":"ES",
+        "name": "Español"
+    },
+    {
+        "db_helper_id": 1,
+        "code":"ENG",
+        "name": "English"
+    }
+]

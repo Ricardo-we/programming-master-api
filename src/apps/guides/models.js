@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
 const { IDField } = require("flow-express/db/base-fields");
 const { sequelize } = require("../../config/db.config");
+const { oneToManyRelation } = require("flow-express/db/relations.utils");
+const { DbHelperOption } = require("../db-helpers/models");
 
 const ProgrammingLanguages = sequelize.define("programming_languages", {
 	id: IDField,
@@ -40,16 +42,28 @@ const Tutorials = sequelize.define("tutorials", {
 	},
 });
 
+const programmingLanguageTranslationOption = {
+	as: "programming_language_translation",
+	foreignKey: { name: "db_helper_option_id", allowNull: false },
+};
+oneToManyRelation(
+	DbHelperOption,
+	ProgrammingLanguages,
+	programmingLanguageTranslationOption,
+);
+
 const programmingLangGuideRelOptions = {
 	foreignKey: { name: "programming_language_id", allowNull: false },
 };
-ProgrammingLanguages.hasMany(GuidesModel, programmingLangGuideRelOptions);
-GuidesModel.belongsTo(ProgrammingLanguages, programmingLangGuideRelOptions);
+oneToManyRelation(
+	ProgrammingLanguages,
+	GuidesModel,
+	programmingLangGuideRelOptions,
+);
 
 const guideTutorialRelOptions = {
 	foreignKey: { name: "guide_id", allowNull: false },
 };
-GuidesModel.hasMany(Tutorials, guideTutorialRelOptions);
-Tutorials.belongsTo(GuidesModel, guideTutorialRelOptions);
+oneToManyRelation(GuidesModel, Tutorials, guideTutorialRelOptions);
 
 module.exports = { GuidesModel, ProgrammingLanguages, Tutorials };
