@@ -44,7 +44,7 @@ const Tutorials = sequelize.define("tutorials", {
 
 const programmingLanguageTranslationOption = {
 	as: "programming_language_translation",
-	foreignKey: { name: "db_helper_option_id", allowNull: false },
+	foreignKey: { name: "language_id", allowNull: false },
 };
 oneToManyRelation(
 	DbHelperOption,

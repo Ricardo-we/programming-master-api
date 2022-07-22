@@ -2,6 +2,8 @@ const { BaseController } = require("flow-express/general/BaseController");
 const { errorResponse } = require("flow-express/general/base.response");
 const { verifyUserToken, createToken } = require("../../utils/jwt");
 const { UsersModel, Profile } = require("./models");
+const { DbHelperOption } = require("../db-helpers/models");
+const { Op } = require("sequelize");
 
 const successMessage = { message: "success" };
 class UsersController extends BaseController {
@@ -11,16 +13,25 @@ class UsersController extends BaseController {
 
 	async post(req, res) {
 		try {
-			const { fullname, email, password } = req.body;
+			const { email, language_code } = req.body;
 			const token = createToken(email);
+			const language_id = (
+				await DbHelperOption.findOne({
+					where: {
+						code: {
+							[Op.or]: [language_code || null, "ES"],
+						},
+					},
+				})
+			).id;
 			const user = await UsersModel.create({
-				fullname,
-				email,
-				password,
+				...req.body,
 				token,
+				language_id,
 			});
-			await Profile.create({ user_id: user.id, plan: "basic" });
-			res.json({ token: user.token });
+			await Profile.create({ user_id: user.id, plan: "admin" });
+
+			res.json({ email, language_code, token: user.token });
 		} catch (error) {
 			errorResponse(error, res);
 		}
@@ -32,9 +43,15 @@ class UsersController extends BaseController {
 			const user = await UsersModel.findOne({
 				where: { email, password },
 			});
-			user.token = createToken(user.email);
+			if (!user) throw new Error("Invalid credentials");
+			user.token = createToken(user?.email);
 			await user.save();
-			return res.json({ token: user.token });
+
+			const language_code = await DbHelperOption.findOne({
+				where: { id: user.language_id },
+			});
+
+			return res.json({ email, language_code, token: user.token });
 		} catch (error) {
 			return errorResponse(error, res);
 		}

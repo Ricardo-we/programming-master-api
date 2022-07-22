@@ -1,22 +1,21 @@
-
 const { Sequelize } = require("sequelize");
 const sequelize = new Sequelize({
-    dialect: 'sqlite',
-    storage: 'db.sqlite'
+	dialect: "sqlite",
+	storage: "db.sqlite",
 });
 
 const authenticate = async () => {
-    await sequelize.authenticate()
-}
+	await sequelize.authenticate();
+};
 
-const syncTables = async (models=[], alter=false, force=false) => {
-    for(const model of models){
-        model.sync({alter, force})
-    }
-}
+const syncTables = async (models = [], alter = false, force = false) => {
+	for (const model of models) {
+		await model.sync({ alter, force });
+	}
+};
 
 module.exports = {
-    sequelize,
-    authenticate,
-    syncTables
+	sequelize,
+	authenticate,
+	syncTables,
 };

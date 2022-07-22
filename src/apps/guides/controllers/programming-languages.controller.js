@@ -1,4 +1,5 @@
 const { ProgrammingLanguages, GuidesModel } = require("../models");
+const { DbHelperOption } = require("../../db-helpers/models");
 const { BaseController } = require("flow-express/general/BaseController");
 const { errorResponse } = require("flow-express/general/base.response");
 const { Op } = require("sequelize");
@@ -15,13 +16,15 @@ class GuidesController extends BaseController {
 			const userFullProfile = await verifyUserToken(req, true);
 			if (userFullProfile.profile.plan !== "admin")
 				throw new Error("Only administrators can change this");
-			const { name, description, is_framework, extension_name } =
-				req.body;
+
+			const { language_code } = req.body;
+			const language_id = await DbHelperOption.findOne({
+				where: { code: language_code },
+			});
+
 			const newLanguage = await ProgrammingLanguages.create({
-				name,
-				description,
-				is_framework,
-				extension_name,
+				...req.body,
+				language_id: language_id.id,
 			});
 			res.json(newLanguage);
 		} catch (error) {

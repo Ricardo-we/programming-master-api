@@ -11,13 +11,15 @@ app.listen(APP_PORT, async () => {
 		const models = getAppsModels(APPS);
 
 		// SET VALUES TO TRUE FOR MAKE DB CHANGES
-		await authenticate();
+		// await authenticate();
 		await syncTables(models, reset, reset);
 		await bulkAllModels(reset);
 
-		await registerModels(models.map((model) => model.getTableName()));
+		if (reset)
+			await registerModels(models.map((model) => model.getTableName()));
 		console.log("Listening on port " + APP_PORT);
 	} catch (error) {
+		console.error("ERROR");
 		console.error(error);
 	}
 });
