@@ -2,7 +2,7 @@ const APP_PORT = process.env.PORT || 5005;
 const { app, APPS } = require("./src/config/app");
 const { syncTables, authenticate } = require("./src/config/db.config");
 const bulkAllModels = require("./src/config/db.bulk");
-const { registerModels } = require("./src/apps/admin/admin-utils");
+const admin = require("./src/apps/admin/admin-utils");
 const { getAppsModels } = require("flow-express/utils/model-utils.js");
 
 app.listen(APP_PORT, async () => {
@@ -15,8 +15,7 @@ app.listen(APP_PORT, async () => {
 		await syncTables(models, reset, reset);
 		await bulkAllModels(reset);
 
-		if (reset)
-			await registerModels(models.map((model) => model.getTableName()));
+		await admin.registerMultipleModels(models);
 		console.log("Listening on port " + APP_PORT);
 	} catch (error) {
 		console.error("ERROR");

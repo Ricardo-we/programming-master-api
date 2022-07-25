@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const { AdminUser } = require("../apps/admin/models");
 const { UsersModel, Profile } = require("../apps/users/models");
 require("dotenv").config();
 
@@ -35,15 +36,11 @@ const verifyUserToken = async (req, checkProfile = false) => {
 	return user;
 };
 
-const verifyUserIsAdmin = async (req) => {
-	const userFullProfile = await verifyUserToken(req, true);
-	if (userFullProfile.profile.plan !== "admin")
-		throw new Error("Only administrators can change this");
-	return userFullProfile;
-};
+const verifyUserIsAdmin = async (req) => verifyToken(req).decodedToken;
 
 module.exports = {
 	verifyUserToken,
 	createToken,
 	verifyUserIsAdmin,
+	verifyToken,
 };
