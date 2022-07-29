@@ -3,5 +3,10 @@
         "id": 1,
         "code":"LANG",
         "name": "Languages"
+    }, 
+    {
+        "id": 2,
+        "code": "COUNTR",
+        "name": "Countries"
     }
 ]

@@ -30,7 +30,7 @@ class AdminUsersController extends BaseController {
 			if (!user) throw new Error("Invalid username");
 			if (!bcrypt.compareSync(password, user.password))
 				throw new Error("Invalid password");
-			const token = createToken(user);
+			const token = createToken(user.dataValues);
 
 			res.status(200).json({ token });
 		} catch (error) {

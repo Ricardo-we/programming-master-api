@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "ejs": "^3.1.8",
@@ -17,6 +18,7 @@
     "flow-express": "^1.2.10",
     "flowex-cli": "^1.1.2",
     "jsonwebtoken": "^8.5.1",
+    "multer": "^1.4.5-lts.1",
     "sequelize": "^6.21.2",
     "sqlite3": "^5.0.8"
   }

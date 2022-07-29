@@ -34,15 +34,18 @@ class GuidesController extends BaseController {
 
 	async get(req, res) {
 		try {
-			const params = {
-				name: {
-					[Op.like]: req?.params.name,
-				},
-			};
+			const { language_code } = req.query;
+
+			const language_id = await DbHelperOption.findOne({
+				where: { code: language_code || null },
+			});
+
+			const filterParams = language_id
+				? { language_id: language_id?.id, ...req.params }
+				: {};
+
 			const programmingLanguages = await ProgrammingLanguages.findAll({
-				where: {
-					...(params && req?.params.name && { name: params.name }),
-				},
+				where: filterParams,
 			});
 			res.status(200).json(programmingLanguages);
 		} catch (error) {

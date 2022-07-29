@@ -6,14 +6,13 @@ const admin = require("./src/apps/admin/admin-utils");
 const { getAppsModels } = require("flow-express/utils/model-utils.js");
 
 app.listen(APP_PORT, async () => {
-	const reset = false;
 	try {
 		const models = getAppsModels(APPS);
 
 		// SET VALUES TO TRUE FOR MAKE DB CHANGES
 		// await authenticate();
-		await syncTables(models, reset, reset);
-		await bulkAllModels(reset);
+		await syncTables(models, false, false);
+		await bulkAllModels(false);
 
 		await admin.registerMultipleModels(models);
 		console.log("Listening on port " + APP_PORT);

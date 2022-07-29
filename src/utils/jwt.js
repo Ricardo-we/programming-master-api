@@ -4,7 +4,7 @@ const { UsersModel, Profile } = require("../apps/users/models");
 require("dotenv").config();
 
 const createToken = (payload) => {
-	const token = jwt.sign({ name: payload }, process.env.API_SECRET_KEY);
+	const token = jwt.sign(payload, process.env.API_SECRET_KEY);
 	return token;
 };
 
@@ -36,7 +36,18 @@ const verifyUserToken = async (req, checkProfile = false) => {
 	return user;
 };
 
-const verifyUserIsAdmin = async (req) => verifyToken(req).decodedToken;
+const verifyUserIsAdmin = async (req) => {
+	const { decodedToken } = verifyToken(req);
+
+	const adminUser = await AdminUser.findOne({
+		where: { username: decodedToken.username },
+	});
+
+	if (adminUser.password !== decodedToken.password)
+		throw new Error("Invalid credentials");
+
+	return decodedToken;
+};
 
 module.exports = {
 	verifyUserToken,

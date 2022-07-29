@@ -1,7 +1,6 @@
 const authToken = localStorage.getItem("flowex-token-key");
 const headers = {
 	"X-Authorization": authToken,
-	"Content-Type": "application/json",
 };
 
 if (!authToken && window.location.pathname === "/admin")
@@ -14,20 +13,32 @@ const errorAlert = (error) =>
 		icon: "error",
 	});
 
+const getFormData = (formHtml) => {
+	const formData = new FormData();
+
+	Array.from(formHtml)?.forEach((input) => {
+		if (input?.files?.length > 0) {
+			input.files.forEach((file) => {
+				formData.append(input.name, file, file.name);
+			});
+		}
+
+		console.log(input.name, input.value);
+		formData.append(input.name, input.value);
+	});
+	return formData;
+};
+
 const createActionRequest = ({
 	method = "POST",
 	requestParams,
 	form,
 	model_name,
 }) => {
-	const formData = {};
-	Array.from(form)?.forEach((input) =>
-		input.name ? (formData[input.name] = input.value) : null,
-	);
-
+	const formData = new FormData(form);
 	return fetch(`/admin${requestParams}`, {
 		method,
-		body: JSON.stringify({ ...formData, model_name }),
+		body: formData,
 		headers,
 	})
 		.then(() => onSelectModel(model_name, "contentContainer"))
@@ -102,10 +113,10 @@ function renderTableRows(model, model_name) {
 			tableRow.insertAdjacentHTML(
 				"beforeend",
 				`
-				<td 
-					style="text-align:center;min-width: 100px;max-width: 200px;word-break: break-word;max-height: 50px;overflow-y: auto;"
-				>
-					${column}
+				<td>
+					<div style="min-width: 100px;resize: both;text-align:center;width: auto;word-break: break-word;max-height: 250px;overflow-y: hidden;">
+						${column}
+					</div>
 				</td>
 			`,
 			);
@@ -186,7 +197,7 @@ function renderModelDetailView({ model, model_name, contentContainerId }) {
 	contentContainer.innerHTML = "";
 	contentContainer.append(
 		renderTable(
-			Object.keys(model.modelDetails),
+			Object.values(model.modelDetails).map((detail) => detail.fieldName),
 			renderTableRows(model, model_name),
 		),
 	);
@@ -215,7 +226,7 @@ const getFieldParentModel = (field, value) => {
 		.then((res) => {
 			const options = res?.modelRecords?.map((option) => ({
 				value: option?.id,
-				label: Object.values(option)[1],
+				label: `${field.fieldName}(${option?.id})`,
 			}));
 			return selectInput({
 				name: field.fieldName,
@@ -266,11 +277,11 @@ function renderForm(
 			formHtml.insertAdjacentHTML(
 				"beforeend",
 				`
-				<textarea value="${defaultValues[field.fieldName] || ""}" placeholder="${
+				<textarea placeholder="${field.fieldName}" name="${
 					field.fieldName
-				}" name="${
-					field.fieldName
-				}" class="form-control" rows="3"></textarea>
+				}" class="form-control" rows="3">${
+					defaultValues[field.fieldName] || ""
+				}</textarea>
 			`,
 			);
 		} else if (fieldType === "BOOLEAN") {
@@ -278,8 +289,8 @@ function renderForm(
 				"beforeend",
 				switchInput({
 					name: field.fieldName,
-					value: defaultValues[field.fieldName] || "",
 					label: field.fieldName,
+					checked: defaultValues[field.fieldName],
 				}),
 			);
 		} else {
@@ -295,12 +306,19 @@ function renderForm(
 		}
 	}
 
-	formHtml.addEventListener("submit", (e) =>
-		onSubmit(e, formHtml, model_name),
-	);
-	submitButton.addEventListener("click", (e) => {
-		onSubmit(e, formHtml, model_name);
-	});
+	const onSubmitForm = (e) => {
+		formHtml.querySelectorAll('input[type="checkbox"]').forEach((check) => {
+			if (!check.checked) {
+				check.value = false;
+				check.checked = true;
+			}
+		});
+
+		return onSubmit(e, formHtml, model_name);
+	};
+
+	formHtml.addEventListener("submit", (e) => onSubmitForm(e));
+	submitButton.addEventListener("click", (e) => onSubmitForm(e));
 
 	return { actionsForm: formHtml, submitButton };
 }

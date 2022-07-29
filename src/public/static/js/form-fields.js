@@ -1,8 +1,15 @@
-function switchInput({ name, label, value }) {
+function switchInput({ name, label, checked = false }) {
 	return `
     <div className="form-group">
         <div class="form-check form-switch">
-            <input name="${name}" value="${value}" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault">
+            <input 
+                name="${name}" 
+                value="true" 
+                class="form-check-input" 
+                type="checkbox" 
+                ${checked ? "checked" : ""}  
+                role="switch" 
+            >
             <label class="form-check-label" for="flexSwitchCheckDefault">${label}</label>
         </div>
     </div>
@@ -28,7 +35,12 @@ function selectInput({ name, options = [{ label: "", value: "" }], value }) {
 
 	for (const option of options) {
 		allOptions += `
-            <option value="${option.value}">${option.label}</option>
+            <option 
+                ${value === option.value ? "selected" : ""} 
+                value="${option.value}"
+            >
+                ${option.label}
+            </option>
         `;
 	}
 
