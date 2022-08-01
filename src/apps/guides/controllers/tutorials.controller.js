@@ -44,6 +44,10 @@ class TutorialsController extends BaseController {
 				where: { id: tutorial.guide_id },
 				include: ProgrammingLanguages,
 			});
+
+			if (guide?.pro_only && req?.user?.plan !== "pro")
+				throw new Error("This tutorial is only for pro users");
+
 			res.json({ guide, tutorial });
 		} catch (error) {
 			errorResponse(error, res);

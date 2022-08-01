@@ -18,22 +18,27 @@ const verifyToken = (req) => {
 };
 
 const verifyUserToken = async (req, checkProfile = false) => {
-	const { decodedToken, token } = verifyToken(req);
-	const user = await UsersModel.findOne({
-		where: {
-			token,
-		},
-	});
-	if (!user) throw new Error("Invalid token");
-	if (checkProfile) {
-		const profile = await Profile.findOne({
+	try {
+		const { decodedToken, token } = verifyToken(req);
+		const user = await UsersModel.findOne({
 			where: {
-				user_id: user.id,
+				token,
 			},
 		});
-		return { user, profile };
+		if (!user) throw new Error("Invalid token");
+		if (checkProfile) {
+			const profile = await Profile.findOne({
+				where: {
+					user_id: user.id,
+				},
+			});
+			return { ...user.dataValues, ...profile.dataValues };
+		}
+
+		return user;
+	} catch (error) {
+		return {};
 	}
-	return user;
 };
 
 const verifyUserIsAdmin = async (req) => {

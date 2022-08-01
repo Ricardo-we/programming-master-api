@@ -2,6 +2,7 @@ const { GuidesModel, Tutorials } = require("./models");
 const { BaseController } = require("flow-express/general/BaseController");
 const { errorResponse } = require("flow-express/general/base.response");
 const { verifyUserToken } = require("../../utils/jwt");
+const { Op } = require("sequelize");
 
 const successMessage = { message: "success" };
 class GuidesController extends BaseController {
@@ -25,7 +26,9 @@ class GuidesController extends BaseController {
 		try {
 			const guides = await GuidesModel.findAll({
 				where: {
-					pro_only: req.params.pro_user || false,
+					pro_only: {
+						[Op.or]: [req?.user.plan === "pro", false],
+					},
 				},
 			});
 			res.status(200).json(guides);
@@ -37,9 +40,15 @@ class GuidesController extends BaseController {
 	async getGuideTutorials(req, res) {
 		try {
 			const { id } = req.params;
-			const guide = await GuidesModel.findOne({ where: { id } });
+			const guide = await GuidesModel.findOne({
+				where: { id, pro_only: req?.user?.plan === "pro" },
+			});
+			if (!guide)
+				throw new Error(
+					"Invalid credentials only pro members can access",
+				);
 			const tutorials = await Tutorials.findAll({
-				where: { guide_id: id },
+				where: { guide_id: guide?.id },
 				attributes: ["id", "title"],
 			});
 			return res.json({ guide, tutorials });

@@ -31,6 +31,10 @@ const GuidesModel = sequelize.define("guides", {
 		type: DataTypes.TEXT,
 		allowNull: false,
 	},
+	icon: {
+		type: DataTypes.STRING(200),
+		defaultValue: "code",
+	},
 });
 
 const Tutorials = sequelize.define("tutorials", {
