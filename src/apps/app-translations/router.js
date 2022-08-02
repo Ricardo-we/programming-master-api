@@ -1,4 +1,3 @@
-
 const ApptranslationsController = require("./controller");
 const BaseRouter = require("flow-express/general/BaseRouter.js");
 
