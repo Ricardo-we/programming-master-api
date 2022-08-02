@@ -40,6 +40,7 @@ class GuidesController extends BaseController {
 	async getGuideTutorials(req, res) {
 		try {
 			const { id } = req.params;
+			console.log(req.user);
 			const guide = await GuidesModel.findOne({
 				where: { id, pro_only: req?.user?.plan === "pro" },
 			});
